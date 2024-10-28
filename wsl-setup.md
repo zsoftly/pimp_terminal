@@ -141,11 +141,17 @@ git config --global alias.co commit
 git config --global alias.ch checkout
 ```
 
-Optional aliases for `pull` and `push`:
+Optional aliases:
 
 ```bash
 git config --global alias.pu pull
 git config --global alias.ph push
+git config --global core.pager cat                # Disables paging by sending all output directly to the terminal
+git config --global advice.statusHints true       # Enables hints in `git status` to provide helpful suggestions
+git config --global advice.commitBeforeMerge true # Provides a reminder to commit any changes before merging
+git config --global alias.br "branch -vv"         # Creates an alias `git br` that lists branches with verbose output
+git config --global color.ui auto                 # Enables automatic color-coding in Git output for easier readability
+
 ```
 
 To view all current Git aliases, run:
