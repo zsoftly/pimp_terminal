@@ -152,6 +152,10 @@ git config --global advice.commitBeforeMerge true # Provides a reminder to commi
 git config --global alias.br "branch -vv"         # Creates an alias `git br` that lists branches with verbose output
 git config --global color.ui auto                 # Enables automatic color-coding in Git output for easier readability
 git config --global init.defaultBranch main  # Sets 'main' as the default branch name for all new repositories
+git config --global pull.rebase false
+git config --global cola.spellcheck false
+git config --global push.autoSetupRemote true
+git config --global push.default current
 ```
 
 To view all current Git aliases, run:
