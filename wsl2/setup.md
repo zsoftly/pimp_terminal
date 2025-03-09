@@ -1,167 +1,216 @@
-# Complete End-to-End Guide for Setting Up WSL 2 Instances
+## Complete End-to-End Guide for Setting Up WSL 2 Instances
 
-## 1. Enable WSL via PowerShell (Prerequisites)
+#### 1. Enable WSL via PowerShell (Prerequisites)
 
 ```powershell
-# Enable required Windows features
+## Enable required Windows features
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 
-# Restart your computer after this step
+## Restart your computer after this step
 
-# Set WSL 2 as default
+## Set WSL 2 as default
 wsl --set-default-version 2
 ```
 
-## 2. Install Ubuntu 24.04
+#### 2. Install Ubuntu 24.04
 
 ```powershell
-# Install Ubuntu 24.04 from Microsoft Store
+## Install Ubuntu 24.04 from Microsoft Store
 wsl --install -d Ubuntu-24.04
 ```
 
 When prompted during first launch, create your username and password.
 
-## 3. Create Export Directory
+#### 3. Create Export Directory
 
 ```powershell
-# Create temp directory for the export
+## Create temp directory for the export
 mkdir C:\temp
 ```
 
-## 4. Export Base Ubuntu
+#### 4. Export Base Ubuntu
 
 ```powershell
-# Terminate the instance if it's running
+## Terminate the instance if it's running
 wsl --terminate Ubuntu-24.04
 
-# Export to a tar file
+## Export to a tar file
 wsl --export Ubuntu-24.04 C:\temp\ubuntu24.tar
 ```
 
-## 5. Create Custom Instances
+#### 5. Create Custom Instances
 
 ```powershell
-# Create directories for instances
+## Create directories for instances
 mkdir C:\WSL\ditah_ps
 mkdir C:\WSL\ditah_zs
 
-# Import the instances
+## Import the instances
 wsl --import ditah_ps C:\WSL\ditah_ps C:\temp\ubuntu24.tar
 wsl --import ditah_zs C:\WSL\ditah_zs C:\temp\ubuntu24.tar
 ```
 
-## 6. Configure First Instance (ditah_ps)
+#### 6. Configure First Instance (ditah_ps)
 
 ```powershell
-# Launch the first instance
+## Launch the first instance
 wsl -d ditah_ps
 ```
 
 Inside the ditah_ps WSL instance:
 ```bash
-# Set hostname directly (don't use hostnamectl as it won't work in WSL)
+## Set hostname directly (don't use hostnamectl as it won't work in WSL)
 echo "personal" | sudo tee /etc/hostname
 
-# Update hosts file
+## Update hosts file
 sudo sed -i '/127.0.1.1/d' /etc/hosts
 echo "127.0.1.1 personal" | sudo tee -a /etc/hosts
 
-# Create a non-root user (replace yourname with preferred username)
-# Skip this if you're already logged in as a non-root user
-NEW_USER=yourname # NEW_USER=dk
+## Create a non-root user (replace yourname with preferred username)
+## Skip this if you're already logged in as a non-root user
+NEW_USER=yourname ## NEW_USER=dk
 sudo useradd -m -G sudo -s /bin/bash $NEW_USER
 sudo passwd $NEW_USER
 
-# Configure WSL to use this hostname and default user permanently
+## Configure WSL to use this hostname and default user permanently
 echo -e "[network]\nhostname = personal\n\n[user]\ndefault = $NEW_USER" | sudo tee /etc/wsl.conf
 
-# Exit this instance
+## Exit this instance
 exit
 ```
 
-## 7. Configure Second Instance (ditah_zs)
+#### 7. Configure Second Instance (ditah_zs)
 
 ```powershell
-# Launch the second instance
+## Launch the second instance
 wsl -d ditah_zs
 ```
 
 Inside the ditah_zs WSL instance:
 ```bash
-# Set hostname directly (don't use hostnamectl as it won't work in WSL)
+## Set hostname directly (don't use hostnamectl as it won't work in WSL)
 echo "zsoftly" | sudo tee /etc/hostname
 
-# Update hosts file
+## Update hosts file
 sudo sed -i '/127.0.1.1/d' /etc/hosts
 echo "127.0.1.1 zsoftly" | sudo tee -a /etc/hosts
 
-# Create a non-root user (replace yourname with preferred username)
-# Skip this if you're already logged in as a non-root user
-NEW_USER=yourname #NEW_USER=dkzs
+## Create a non-root user (replace yourname with preferred username)
+## Skip this if you're already logged in as a non-root user
+NEW_USER=yourname ##NEW_USER=dkzs
 sudo useradd -m -G sudo -s /bin/bash $NEW_USER
 sudo passwd $NEW_USER
 
-# Configure WSL to use this hostname and default user permanently
+## Configure WSL to use this hostname and default user permanently
 echo -e "[network]\nhostname = zsoftly\n\n[user]\ndefault = $NEW_USER" | sudo tee /etc/wsl.conf
 
-# Exit this instance
+## Exit this instance
 exit
 ```
 
-## 8. Restart Instances to Apply Changes
+#### 8. Restart Instances to Apply Changes
 
 ```powershell
-# Shut down all WSL instances to apply the changes
+## Shut down all WSL instances to apply the changes
 wsl --shutdown
 
-# Wait a few seconds
+## Wait a few seconds
 Start-Sleep -Seconds 5
 
-# Restart the instances with new settings
+## Restart the instances with new settings
 wsl -d ditah_ps
 wsl -d ditah_zs
 ```
 
-## 9. Verify Hostname Configuration
+#### 9. Verify Hostname Configuration
 
 Inside each WSL instance:
 ```bash
-# Check the current hostname
+## Check the current hostname
 hostname
 
-# Make sure sudo works without hostname errors
+## Make sure sudo works without hostname errors
 sudo echo "Hostname is working correctly"
 ```
 
-## 10. Managing Your Instances
+#### 10. Managing Your Instances
 
 ```powershell
-# List all WSL instances and their status
+## List all WSL instances and their status
 wsl --list -v
 
-# Start a specific instance
+## Start a specific instance
 wsl -d ditah_ps
 
-# Terminate a specific instance when done
+## Terminate a specific instance when done
 wsl --terminate ditah_ps
 
-# Shutdown all WSL instances
+## Shutdown all WSL instances
 wsl --shutdown
 
-# Unregister (remove) an instance if no longer needed
-# This deletes the virtual disk and all contents of that instance
+## Unregister (remove) an instance if no longer needed
+## This deletes the virtual disk and all contents of that instance
 wsl --unregister ditah_ps
 ```
 
-## 11. Cleaning Up (Optional)
+#### 11. Cleaning Up (Optional)
 
 ```powershell
-# If you want to save disk space after setting up instances
+## If you want to save disk space after setting up instances
 del C:\temp\ubuntu24.tar
 ```
 
-## Important Notes
+#### 12. Setting Up SSH Keys for GitHub
+
+For each WSL instance where you want to use GitHub:
+
+```bash
+## Generate a new SSH key (replace your_email@example.com with your GitHub email)
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+## Press Enter to accept the default file location
+## Enter a secure passphrase when prompted (or press Enter for no passphrase)
+
+## Start the SSH agent in the background
+eval "$(ssh-agent -s)"
+
+## Add your SSH private key to the ssh-agent
+ssh-add ~/.ssh/id_ed25519
+
+## Display your public SSH key and copy it to clipboard
+cat ~/.ssh/id_ed25519.pub
+## Copy the output to your clipboard
+```
+
+Now add the SSH key to your GitHub account:
+
+1. Log in to [GitHub](https://github.com/)
+2. Click your profile picture in the top right corner
+3. Select **Settings**
+4. In the left sidebar, click **SSH and GPG keys**
+5. Click **New SSH key**
+6. Add a descriptive title (e.g., "WSL Personal" or "WSL Work")
+7. Paste the public key you copied earlier into the "Key" field
+8. Click **Add SSH key**
+
+Verify your SSH connection:
+```bash
+## Test your SSH connection to GitHub
+ssh -T git@github.com
+
+## You might see a warning about authenticity of host - type 'yes' to continue
+## If successful, you'll see: "Hi username! You've successfully authenticated..."
+```
+
+Configure your Git identity:
+```bash
+## Set your username and email for Git commits
+git config --global user.name "Your Name"
+git config --global user.email "your_email@example.com"
+```
+
+#### Important Notes
 
 1. **Don't use `hostnamectl`**: As demonstrated, `hostnamectl` doesn't work in WSL because it relies on systemd, which is not fully supported in the default WSL configuration.
 
@@ -170,3 +219,5 @@ del C:\temp\ubuntu24.tar
 3. **Complete shutdown required**: For hostname changes to take effect, a complete shutdown of all WSL instances is required (not just terminating the specific instance).
 
 4. **Isolation between instances**: Each instance is fully isolated with its own filesystem, processes, and hostname. You can run potentially risky applications in one instance and terminate it when done without affecting your host system or other WSL instances.
+
+5. **SSH Keys**: Each WSL instance has its own SSH keys. If you want to use GitHub from multiple instances, you'll need to add the SSH public key from each instance to your GitHub account.
