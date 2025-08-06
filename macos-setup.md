@@ -94,7 +94,7 @@ rm -rf MesloFont Meslo.zip
 
 1. Open iTerm2
 2. Go to iTerm2 > Preferences > Profiles > Text
-3. In the Font section, change the font to "MesloLGS NF"
+3. In the Font section, change the font to "MesloLGS Nerd Font Mono"
 
 ## 8. Configure Powerlevel10k
 
@@ -154,8 +154,8 @@ source ~/.zshrc
 
 ```json
 {
-  "editor.fontFamily": "'MesloLGS NF', Menlo, Monaco, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "MesloLGS NF"
+  "editor.fontFamily": "'MesloLGS Nerd Font Mono', Menlo, Monaco, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono"
 }
 ```
 

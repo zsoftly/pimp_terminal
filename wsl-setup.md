@@ -68,7 +68,7 @@ For proper font rendering, install Meslo Nerd Font on your Windows host machine 
 
 1. Download the Meslo Nerd Font [here](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Meslo.zip).
 2. Unzip the file and install the `.ttf` files.
-3. Set MesloLGS NF as your font in your WSL terminal settings (if using Windows Terminal, go to Settings > Appearance > Font face).
+3. Set MesloLGS Nerd Font Mono as your font in your WSL terminal settings (if using Windows Terminal, go to Settings > Appearance > Font face).
 
 ### 5. Configure Powerlevel10k
 
@@ -123,8 +123,8 @@ If you're using VS Code in WSL, configure it to use Meslo Nerd Font.
 
 ```json
 {
-  "editor.fontFamily": "'MesloLGS NF', Consolas, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "MesloLGS NF"
+  "editor.fontFamily": "'MesloLGS Nerd Font Mono', Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono"
 }
 ```
 
