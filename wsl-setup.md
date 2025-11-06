@@ -69,7 +69,7 @@ For proper font rendering, install Meslo Nerd Font on your Windows host machine 
 1. Download the Meslo Nerd Font from the [Nerd Fonts releases page](https://github.com/ryanoasis/nerd-fonts/releases/latest) (look for `Meslo.zip`).
 2. Extract the downloaded `.zip` file to a folder.
 3. Select all the `.ttf` font files, right-click, and choose **Install for all users** (this requires administrator privileges).
-4. Set **MesloLGS Nerd Font Mono** as your font in Windows Terminal (go to Settings > Appearance > Font face).
+4. Set **MesloLGS Nerd Font Mono** as your font in Windows Terminal (go to Settings > Defaults > Appearance > Font face).
 
 ### 5. Configure Powerlevel10k
 
