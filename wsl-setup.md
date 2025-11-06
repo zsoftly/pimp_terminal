@@ -66,9 +66,10 @@ Save and exit (`Ctrl+X`, then `Y`, then `Enter`).
 
 For proper font rendering, install Meslo Nerd Font on your Windows host machine and set it in your WSL terminal.
 
-1. Download the Meslo Nerd Font [here](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Meslo.zip).
-2. Unzip the file and install the `.ttf` files.
-3. Set MesloLGS Nerd Font Mono as your font in your WSL terminal settings (if using Windows Terminal, go to Settings > Appearance > Font face).
+1. Download the Meslo Nerd Font from the [Nerd Fonts releases page](https://github.com/ryanoasis/nerd-fonts/releases/latest) (look for `Meslo.zip`).
+2. Extract the downloaded `.zip` file to a folder.
+3. Select all the `.ttf` font files, right-click, and choose **Install for all users** (this requires administrator privileges).
+4. Set **MesloLGS Nerd Font Mono** as your font in Windows Terminal (go to Settings > Appearance > Font face).
 
 ### 5. Configure Powerlevel10k
 
