@@ -1,16 +1,18 @@
 ## Terminal Customization Guides
 
-This repository contains comprehensive guides for customizing your terminal environment on macOS, Windows, and WSL (Ubuntu). Whether you're using macOS with iTerm2 and Powerlevel10k, Windows Terminal with Oh My Posh, or WSL with Powerlevel10k, these guides will help you create a powerful, efficient, and visually appealing command-line interface.
+This repository contains terminal setup guides for macOS, Windows, WSL, and Linux. The Linux guide includes a user-scoped, repeatable installer for Zsh, Powerlevel10k, autosuggestions, and syntax highlighting.
 
 ### Contents
 
 - [macOS Setup Guide](macos-setup.md)
 - [Windows Setup Guide](windows-setup.md)
 - [WSL Setup Guide](wsl-setup.md)
+- [Linux Setup Guide](linux-setup.md)
 
 ### Features
 
 - Detailed step-by-step instructions for macOS, Windows, and WSL (Ubuntu)
+- A pinned Linux installer that keeps Powerlevel10k and Zsh plugins under the target user's configuration directory
 - Installation and configuration of popular tools:
   - macOS: iTerm2, Powerlevel10k, Oh My Zsh, Meslo Nerd Font
   - Windows: Oh My Posh, Terminal Icons, Nerd Fonts
@@ -25,6 +27,7 @@ This repository contains comprehensive guides for customizing your terminal envi
    - For macOS users: [macOS Setup Guide](macos-setup.md)
    - For Windows users: [Windows Setup Guide](windows-setup.md)
    - For WSL users: [WSL Setup Guide](wsl-setup.md)
+   - For Linux servers and browser terminals: [Linux Setup Guide](linux-setup.md)
 2. Follow the steps in the chosen guide to set up your customized terminal environment.
 3. Enjoy your new, efficient, and visually appealing command-line interface!
 

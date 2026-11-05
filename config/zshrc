@@ -1,0 +1,56 @@
+# Managed default. Rerunning the installer refreshes this file.
+# Put personal additions in ~/.config/pimp-terminal/local.zsh.
+
+if [[ $- != *i* ]] || [[ -n ${PIMP_TERMINAL_DISABLE:-} ]]; then
+  return
+fi
+
+export PATH="$HOME/.local/bin:$PATH"
+typeset -g PIMP_TERMINAL_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/pimp-terminal"
+mkdir -p "$PIMP_TERMINAL_STATE_DIR"
+
+HISTFILE="$PIMP_TERMINAL_STATE_DIR/zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt append_history inc_append_history share_history hist_ignore_space hist_reduce_blanks
+setopt hist_expire_dups_first hist_ignore_all_dups hist_save_no_dups
+
+autoload -Uz compinit
+compinit -d "$PIMP_TERMINAL_STATE_DIR/zcompdump"
+
+alias ll='ls -lah'
+alias la='ls -A'
+alias gst='git status -sb'
+alias gl='git log --oneline --decorate -12'
+
+if [[ -r /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+fi
+if [[ -r /usr/share/doc/fzf/examples/completion.zsh ]]; then
+  source /usr/share/doc/fzf/examples/completion.zsh
+fi
+
+typeset -g PIMP_TERMINAL_VENDOR_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/vendor"
+typeset -g POWERLEVEL9K_DISABLE_GITSTATUS=true
+typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+source "$PIMP_TERMINAL_VENDOR_DIR/powerlevel10k/powerlevel10k.zsh-theme"
+if [[ -r "$HOME/.p10k.zsh" ]]; then
+  source "$HOME/.p10k.zsh"
+else
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/p10k.zsh"
+fi
+
+if [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/local.zsh" ]]; then
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/local.zsh"
+fi
+
+# Keep the shell offline even when a personal p10k profile resets theme options.
+typeset -g POWERLEVEL9K_DISABLE_GITSTATUS=true
+typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+
+typeset -g ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+source "$PIMP_TERMINAL_VENDOR_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+# Syntax highlighting must be loaded after all other interactive plugins.
+source "$PIMP_TERMINAL_VENDOR_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
