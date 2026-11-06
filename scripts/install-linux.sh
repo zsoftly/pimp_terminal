@@ -9,6 +9,16 @@ REPO_DIR=$(unset CDPATH; cd -- "$SCRIPT_DIR/.." && pwd)
 . "$REPO_DIR/config/linux-versions.env"
 
 HANDOFF=false
+BODY_FILES=()
+
+cleanup() {
+  local body_file
+  for body_file in "${BODY_FILES[@]}"; do
+    [ -z "$body_file" ] || rm -f -- "$body_file"
+  done
+}
+
+trap cleanup EXIT
 
 usage() {
   cat <<'EOF'
@@ -33,7 +43,8 @@ assert_regular_or_missing() {
 
 assert_directory_not_symlink() {
   [ ! -L "$1" ] || fail "refusing symbolic link directory: $1"
-  mkdir -p -- "$1"
+  [ ! -e "$1" ] || [ -d "$1" ] || fail "expected directory: $1"
+  [ -d "$1" ] || mkdir -p -- "$1"
   [ -d "$1" ] || fail "expected directory: $1"
 }
 
@@ -67,8 +78,11 @@ replace_managed_block() {
   local begin_count end_count begin_line end_line temporary_path existed=false
 
   assert_regular_or_missing "$source_path"
-  [ -f "$source_path" ] && existed=true
-  touch "$source_path"
+  if [ -f "$source_path" ]; then
+    existed=true
+  else
+    : >"$source_path"
+  fi
   begin_count=$(grep -Fxc "$begin" "$source_path" || true)
   end_count=$(grep -Fxc "$end" "$source_path" || true)
   [ "$begin_count" -le 1 ] && [ "$end_count" -le 1 ] || fail "duplicate managed markers in $source_path"
@@ -128,8 +142,10 @@ install_pinned_repo() {
     git init -q "$destination"
     git -C "$destination" remote add origin "$url"
   fi
-  git -C "$destination" fetch -q --depth 1 origin "$revision"
-  git -C "$destination" checkout -q --detach FETCH_HEAD
+  if [ "$(git -C "$destination" rev-parse --verify HEAD 2>/dev/null || true)" != "$revision" ]; then
+    git -C "$destination" fetch -q --depth 1 origin "$revision"
+    git -C "$destination" checkout -q --detach FETCH_HEAD
+  fi
   [ "$(git -C "$destination" rev-parse HEAD)" = "$revision" ] || fail "could not verify pinned revision for $name"
 }
 
@@ -156,22 +172,45 @@ assert_directory_not_symlink "$CONFIG_DIR"
 assert_directory_not_symlink "$VENDOR_DIR"
 refresh_managed_file "$REPO_DIR/config/p10k.zsh" "$CONFIG_DIR/p10k.zsh"
 refresh_managed_file "$REPO_DIR/config/zshrc" "$CONFIG_DIR/zshrc"
+refresh_managed_file "$REPO_DIR/config/zshenv" "$CONFIG_DIR/zshenv"
+
+STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+case "$STATE_HOME" in
+  /*) ;;
+  *) STATE_HOME="$HOME/.local/state" ;;
+esac
+STATE_DIR="$STATE_HOME/pimp-terminal"
+TMP_DIR="$STATE_DIR/tmp"
+assert_directory_not_symlink "$STATE_HOME"
+assert_directory_not_symlink "$STATE_DIR"
+assert_directory_not_symlink "$TMP_DIR"
+chmod 700 "$TMP_DIR"
 
 install_pinned_repo powerlevel10k https://github.com/romkatv/powerlevel10k.git "$POWERLEVEL10K_REV"
 install_pinned_repo zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_AUTOSUGGESTIONS_REV"
 install_pinned_repo zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_SYNTAX_HIGHLIGHTING_REV"
 
 zsh_body=$(mktemp)
+BODY_FILES+=("$zsh_body")
 cat >"$zsh_body" <<'EOF'
 if [[ -z ${PIMP_TERMINAL_DISABLE:-} ]]; then
   source "${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/zshrc"
 fi
 EOF
 replace_managed_block "$HOME/.zshrc" zsh "$zsh_body"
-rm -f -- "$zsh_body"
+
+zshenv_body=$(mktemp)
+BODY_FILES+=("$zshenv_body")
+cat >"$zshenv_body" <<'EOF'
+if [[ -z ${PIMP_TERMINAL_DISABLE:-} ]]; then
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/pimp-terminal/zshenv"
+fi
+EOF
+replace_managed_block "$HOME/.zshenv" zshenv "$zshenv_body"
 
 if [ "$HANDOFF" = true ]; then
   bash_body=$(mktemp)
+  BODY_FILES+=("$bash_body")
   cat >"$bash_body" <<'EOF'
 if [[ $- == *i* ]] && [[ -z ${PIMP_TERMINAL_DISABLE:-} ]] && [[ -z ${PIMP_TERMINAL_IN_ZSH:-} ]]; then
   export PIMP_TERMINAL_IN_ZSH=1
@@ -187,10 +226,11 @@ EOF
     fi
   done
   replace_managed_block "$login_path" bash-login-handoff "$bash_body"
-  rm -f -- "$bash_body"
 fi
 
 zsh -n "$CONFIG_DIR/zshrc"
 zsh -n "$CONFIG_DIR/p10k.zsh"
+zsh -n "$CONFIG_DIR/zshenv"
 zsh -n "$HOME/.zshrc"
+zsh -n "$HOME/.zshenv"
 printf 'Installed Linux terminal profile for %s. Open a new terminal.\n' "${USER:-user}"

@@ -13,7 +13,7 @@ It does not install iTerm2. iTerm2 is a macOS client application. For a remote L
 
 The installer uses pinned upstream Git revisions in [config/linux-versions.env](config/linux-versions.env). It does not use `sudo`, change the login shell, or download anything during shell startup.
 
-It refreshes its managed defaults under `~/.config/pimp-terminal` on each run. Personal files stay separate: use `~/.p10k.zsh` for the Powerlevel10k wizard output and `~/.config/pimp-terminal/local.zsh` for other Zsh additions. Neither file is overwritten.
+The installer refreshes its managed defaults under `~/.config/pimp-terminal` on each run. It also creates a private directory for early Zsh and Powerlevel10k temporary files. The default is `~/.local/state/pimp-terminal/tmp`. An absolute `XDG_STATE_HOME` moves this directory under that location. Relative values use the home default. Keep personal files separate. Use `~/.p10k.zsh` for Powerlevel10k wizard output and `~/.config/pimp-terminal/local.zsh` for other Zsh additions. Neither file is overwritten.
 
 ## Administrator prerequisites
 
@@ -34,7 +34,7 @@ Clone this repository, then run:
 ./scripts/install-linux.sh
 ```
 
-The installer creates user-owned files under `~/.config/pimp-terminal` and adds one marked source block to `~/.zshrc`. It makes timestamped backups before it refreshes an existing managed default or changes an existing dotfile.
+The installer creates user-owned files under `~/.config/pimp-terminal` and adds marked source blocks to `~/.zshenv` and `~/.zshrc`. It makes timestamped backups before it refreshes an existing managed default or changes an existing dotfile.
 
 It refuses symbolic links, duplicate markers, nested markers, incomplete markers, and an unexpected `ZDOTDIR` instead of guessing where configuration belongs.
 
