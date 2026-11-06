@@ -1,0 +1,34 @@
+# Managed default. This file runs before Zsh's instant prompt.
+# Preserve a valid custom TMPDIR, but never use a shared or unusable default.
+
+typeset -g PIMP_TERMINAL_NORMALIZED_TMPDIR=""
+if [[ -n ${TMPDIR:-} ]]; then
+  PIMP_TERMINAL_NORMALIZED_TMPDIR="${TMPDIR:a}"
+fi
+
+_pimp_terminal_private_tmpdir() {
+  local -a tmpdir_uid tmpdir_mode
+  zmodload -F zsh/stat b:zstat 2>/dev/null || return 1
+  zstat -A tmpdir_uid +uid -- "$1" 2>/dev/null || return 1
+  zstat -A tmpdir_mode +mode -- "$1" 2>/dev/null || return 1
+  (( tmpdir_uid[1] == EUID && (tmpdir_mode[1] & 8#77) == 0 && (tmpdir_mode[1] & 8#700) == 8#700 ))
+}
+
+if [[ -n ${TMPDIR:-} && $PIMP_TERMINAL_NORMALIZED_TMPDIR != /tmp && -d $PIMP_TERMINAL_NORMALIZED_TMPDIR && ! -L $PIMP_TERMINAL_NORMALIZED_TMPDIR ]] && _pimp_terminal_private_tmpdir "$PIMP_TERMINAL_NORMALIZED_TMPDIR"; then
+  export TMPDIR="$PIMP_TERMINAL_NORMALIZED_TMPDIR"
+else
+  typeset -g PIMP_TERMINAL_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+  if [[ $PIMP_TERMINAL_STATE_HOME != /* ]]; then
+    PIMP_TERMINAL_STATE_HOME="$HOME/.local/state"
+  fi
+  typeset -g PIMP_TERMINAL_TMPDIR="$PIMP_TERMINAL_STATE_HOME/pimp-terminal/tmp"
+  if [[ ! -d $PIMP_TERMINAL_TMPDIR || -L $PIMP_TERMINAL_TMPDIR ]]; then
+    command mkdir -p -m 700 -- "$PIMP_TERMINAL_TMPDIR" 2>/dev/null || true
+  fi
+  if [[ -d $PIMP_TERMINAL_TMPDIR && ! -L $PIMP_TERMINAL_TMPDIR && -O $PIMP_TERMINAL_TMPDIR ]]; then
+    command chmod 700 -- "$PIMP_TERMINAL_TMPDIR" 2>/dev/null || true
+  fi
+  if [[ -d $PIMP_TERMINAL_TMPDIR && ! -L $PIMP_TERMINAL_TMPDIR ]] && _pimp_terminal_private_tmpdir "$PIMP_TERMINAL_TMPDIR"; then
+    export TMPDIR="$PIMP_TERMINAL_TMPDIR"
+  fi
+fi
